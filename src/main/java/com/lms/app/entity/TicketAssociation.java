@@ -27,7 +27,7 @@ public class TicketAssociation {
 	private Long ticketAssociationID;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean isWinner;
+	private boolean winner;
 
 	@CreationTimestamp
 	@Column(name = "DATEOFCREATION", nullable = false)
@@ -45,16 +45,29 @@ public class TicketAssociation {
 	@ManyToOne(optional = true)
 	private TicketOwner ticketOwner;
 
+	@JoinColumn(name = "CUSTOMERIDENTITY", referencedColumnName = "CUSTOMERIDENTITY")
+	@ManyToOne(optional = true)
+	private Customer customer;
+
 	public TicketAssociation() {
 	}
 
-	public TicketAssociation(boolean isWinner, Timestamp dateOfCreation, Timestamp lastModifiedDate, Ticket ticket,
-			TicketOwner ticketOwner) {
-		this.isWinner = isWinner;
+	public TicketAssociation(boolean winner, Timestamp dateOfCreation, Timestamp lastModifiedDate, Ticket ticket,
+			TicketOwner ticketOwner, Customer customer) {
+		this.winner = winner;
 		this.dateOfCreation = dateOfCreation;
 		this.lastModifiedDate = lastModifiedDate;
 		this.ticket = ticket;
 		this.ticketOwner = ticketOwner;
+		this.customer = customer;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public Long getTicketAssociationID() {
@@ -62,11 +75,11 @@ public class TicketAssociation {
 	}
 
 	public boolean isWinner() {
-		return isWinner;
+		return winner;
 	}
 
-	public void setWinner(boolean isWinner) {
-		this.isWinner = isWinner;
+	public void setWinner(boolean winner) {
+		this.winner = winner;
 	}
 
 	public Timestamp getDateOfCreation() {

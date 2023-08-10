@@ -28,6 +28,9 @@ public class Ticket {
 	@Column(name = "TICKETNUMBER", nullable = false, length = 50, unique = true)
 	private String ticketNumber;
 
+	@Column(columnDefinition = "boolean default true")
+	private boolean available = true;
+
 	@CreationTimestamp
 	@Column(name = "DATEOFCREATION", nullable = false)
 	private Timestamp dateOfCreation;
@@ -39,8 +42,10 @@ public class Ticket {
 	public Ticket() {
 	}
 
-	public Ticket(String ticketNumber, Timestamp dateOfCreation, Draw draw) {
+	public Ticket(String ticketNumber, boolean available, Timestamp dateOfCreation, Draw draw) {
+		super();
 		this.ticketNumber = ticketNumber;
+		this.available = available;
 		this.dateOfCreation = dateOfCreation;
 		this.draw = draw;
 	}
@@ -73,10 +78,12 @@ public class Ticket {
 		this.draw = draw;
 	}
 
-	@Override
-	public String toString() {
-		return "Ticket [ticketID=" + ticketID + ", ticketNumber=" + ticketNumber + ", dateOfCreation=" + dateOfCreation
-				+ ", draw=" + draw + "]";
+	public boolean isAvailable() {
+		return available;
+	}
+
+	public void setAvailable(boolean available) {
+		this.available = available;
 	}
 
 }

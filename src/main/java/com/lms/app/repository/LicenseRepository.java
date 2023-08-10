@@ -8,4 +8,6 @@ import com.lms.app.entity.License;
 @Repository
 public interface LicenseRepository extends JpaRepository<License, Long> {
 
+	License findByLicenseKey(String licenseKey);
+
 }

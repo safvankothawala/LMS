@@ -1,5 +1,11 @@
 package com.lms.app.service;
 
+import com.lms.app.dto.CustomerResponse;
+import com.lms.app.dto.DrawResponse;
+import com.lms.app.dto.GenerateTicketsResponse;
+import com.lms.app.dto.LicenseResponse;
+import com.lms.app.dto.PurchaseTicketResponse;
+import com.lms.app.dto.TicketOwnerResponse;
 import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
@@ -11,13 +17,13 @@ public interface iLmsService {
 
 	License getLicenseForID(long licenseID);
 
-	License createLicense(License license);
+	LicenseResponse createLicense(License license);
 
-	Customer getCustomerByName(String customerName);
+	Customer getCustomerByCustomerIdentity(String customerIdentity);
 
-	Customer createCustomer(Customer customer);
+	CustomerResponse createCustomer(Customer customer);
 
-	Draw createDraw(Draw draw);
+	DrawResponse createDraw(Draw draw);
 
 	Draw getDrawByDrawNumber(String drawNumber);
 
@@ -25,11 +31,13 @@ public interface iLmsService {
 
 	Ticket getTicketByTicketNumber(String ticketNumber);
 
-	TicketOwner createTicketOwner(TicketOwner ticketOwner);
+	TicketOwnerResponse createTicketOwner(TicketOwner ticketOwner);
 
 	TicketOwner getTicketOwnerByTicketOwnerIdentity(String ticketOwnerIdentity);
 
-	TicketAssociation assignTicketToTicketOwner(String ticketNumber, String ticketOwnerIdentity);
+	PurchaseTicketResponse purchaseTicket(String ticketNumber, String ticketOwnerIdentity);
 
 	TicketAssociation setWinnerTicket(String ticketNumber);
+
+	GenerateTicketsResponse generateTicketsforDrawNumber(String drawNumber);
 }

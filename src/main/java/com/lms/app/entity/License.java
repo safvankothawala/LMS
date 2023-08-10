@@ -27,37 +27,39 @@ public class License {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "LICENSEID")
 	private Long licenseID;
-	
-	@Column(name = "LICENSEKEY", nullable = false, length = 50)
+
+	@Column(name = "LICENSEKEY", nullable = false, length = 50, unique = true)
 	private String licenseKey;
-	
-	@Column(name = "MAXTICKETSPERDRAW", nullable = false)
-	private int maxTicketsPerDraw;
-	
+
+	@Column(name = "MAXTICKETS", nullable = false)
+	private int maxTickets;
+
 	@Column(name = "VALIDITYPERIOD", nullable = false)
 	private Timestamp validityPeriod;
-	
+
 	@CreationTimestamp
 	@Column(name = "DATEOFCREATION", nullable = false)
 	private Timestamp dateOfCreation;
-	
+
 	@UpdateTimestamp
 	@Column(name = "LASTMODIFIEDDATE", nullable = false)
 	private Timestamp lastModifiedDate;
-	
+
 	@OneToOne(mappedBy = "license")
-    private Customer customer;
+	private Customer customer;
 
 	public License() {
 	}
 
-	public License(String licenseKey, int maxTicketsPerDraw, Timestamp validityPeriod, Timestamp dateOfCreation,
-			Timestamp lastModifiedDate) {
+	public License(String licenseKey, int maxTickets, Timestamp validityPeriod, Timestamp dateOfCreation,
+			Timestamp lastModifiedDate, Customer customer) {
+		super();
 		this.licenseKey = licenseKey;
-		this.maxTicketsPerDraw = maxTicketsPerDraw;
+		this.maxTickets = maxTickets;
 		this.validityPeriod = validityPeriod;
 		this.dateOfCreation = dateOfCreation;
 		this.lastModifiedDate = lastModifiedDate;
+		this.customer = customer;
 	}
 
 	public Long getLicenseID() {
@@ -72,12 +74,20 @@ public class License {
 		this.licenseKey = licenseKey;
 	}
 
-	public int getMaxTicketsPerDraw() {
-		return maxTicketsPerDraw;
+	public int getMaxTickets() {
+		return maxTickets;
 	}
 
-	public void setMaxTicketsPerDraw(int maxTicketsPerDraw) {
-		this.maxTicketsPerDraw = maxTicketsPerDraw;
+	public void setMaxTickets(int maxTickets) {
+		this.maxTickets = maxTickets;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public Timestamp getValidityPeriod() {

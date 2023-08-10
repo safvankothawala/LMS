@@ -1,6 +1,7 @@
 package com.lms.app.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -30,7 +32,7 @@ public class Customer {
 	@Column(name = "CUSTOMERNAME", nullable = false, length = 50)
 	private String customerName;
 
-	@Column(name = "CUSTOMERIDENTITY", nullable = false, length = 100)
+	@Column(name = "CUSTOMERIDENTITY", nullable = false, length = 100, unique = true)
 	private String customerIdentity;
 
 	@Column(name = "PAYMENTMETHOD", nullable = false, length = 100)
@@ -48,25 +50,29 @@ public class Customer {
 	@JoinColumn(name = "LICENSEID", referencedColumnName = "LICENSEID")
 	private License license;
 
-	@Override
-	public String toString() {
-		return "Customer [customerID=" + customerID + ", customerName=" + customerName + ", customerIdentity="
-				+ customerIdentity + ", paymentMethod=" + paymentMethod + ", dateOfCreation=" + dateOfCreation
-				+ ", lastModifiedDate=" + lastModifiedDate + ", license=" + license + "]";
-	}
+	@OneToMany(mappedBy = "customer")
+	private List<TicketAssociation> tickets;
 
 	public Customer() {
 	}
 
 	public Customer(String customerName, String customerIdentity, String paymentMethod, Timestamp dateOfCreation,
-			Timestamp lastModifiedDate, License license) {
-		super();
+			Timestamp lastModifiedDate, License license, List<TicketAssociation> tickets) {
 		this.customerName = customerName;
 		this.customerIdentity = customerIdentity;
 		this.paymentMethod = paymentMethod;
 		this.dateOfCreation = dateOfCreation;
 		this.lastModifiedDate = lastModifiedDate;
 		this.license = license;
+		this.tickets = tickets;
+	}
+
+	public List<TicketAssociation> getTickets() {
+		return tickets;
+	}
+
+	public void setTickets(List<TicketAssociation> tickets) {
+		this.tickets = tickets;
 	}
 
 	public Long getCustomerID() {

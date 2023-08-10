@@ -5,8 +5,13 @@ import org.springframework.stereotype.Repository;
 
 import com.lms.app.entity.Customer;
 
+/**
+ * Repository for Customer Entity
+ */
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 	Customer findByCustomerName(String customerName);
+
+	Customer findByCustomerIdentity(String customerIdentity);
 }
