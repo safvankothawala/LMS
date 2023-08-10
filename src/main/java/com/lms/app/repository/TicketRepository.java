@@ -14,4 +14,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	Ticket findByTicketNumber(String ticketNumber);
 
 	List<Ticket> findByDraw(Draw draw);
+	
+	List<Ticket> findByDrawAndAvailable(Draw draw, boolean available);
 }

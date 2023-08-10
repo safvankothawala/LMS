@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lms.app.dto.CustomerResponse;
 import com.lms.app.dto.DrawResponse;
+import com.lms.app.dto.DrawWinnerResponse;
 import com.lms.app.dto.GenerateTicketsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketRequest;
@@ -24,7 +25,6 @@ import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
 import com.lms.app.entity.Ticket;
-import com.lms.app.entity.TicketAssociation;
 import com.lms.app.entity.TicketOwner;
 import com.lms.app.service.LmsServiceImpl;
 
@@ -243,8 +243,29 @@ public class LmsController {
 
 	}
 
-	@PostMapping("/ticketassociation/setwinner/{ticketNumber}")
-	public TicketAssociation setWinnerTicket(String ticketNumber) {
-		return lmsService.setWinnerTicket(ticketNumber);
+	/**
+	 * Select Winning Ticket for Draw
+	 * 
+	 * @param Draw Number
+	 * @return DrawWinnerResponse
+	 */
+	@PostMapping("/draw/winner")
+	public DrawWinnerResponse selectWinnerForDraw(@RequestBody Draw draw) {
+
+		logger.debug("Select Winner for Draw " + draw.getDrawNumber());
+
+		DrawWinnerResponse drawWinnerResponse = lmsService.selectWinnerForDraw(draw);
+
+		if (drawWinnerResponse.getResponseCode() == 0) {
+			logger.info("Winner Ticket Number: " + drawWinnerResponse.getTicketNumber() + " , Customer Identity: "
+					+ drawWinnerResponse.getCustomerIdentity() + " and TicketOwner: "
+					+ drawWinnerResponse.getTicketOwnerIdentity() + " for Draw Number: " + draw.getDrawNumber());
+		} else {
+			logger.error("Error in selecting Winner for Draw: " + draw.getDrawNumber() + " , error: "
+					+ drawWinnerResponse.getResponseMessage());
+
+		}
+
+		return drawWinnerResponse;
 	}
 }

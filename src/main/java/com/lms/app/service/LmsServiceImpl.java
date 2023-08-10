@@ -2,8 +2,8 @@ package com.lms.app.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.lms.app.dto.CustomerResponse;
 import com.lms.app.dto.DrawResponse;
+import com.lms.app.dto.DrawWinnerResponse;
 import com.lms.app.dto.GenerateTicketsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketResponse;
@@ -225,33 +226,16 @@ public class LmsServiceImpl implements iLmsService {
 				}
 
 				// Get Ticket for Ticket Number
-				List<Ticket> tickets = ticketRepository.findByDraw(draw);
+				List<Ticket> tickets = ticketRepository.findByDrawAndAvailable(draw, true);
 				if (tickets != null && tickets.size() > 0) {
-					Iterator<Ticket> itr = tickets.iterator();
-					boolean isTicketAvailable = false;
-					while (itr.hasNext()) {
-						Ticket ticket = itr.next();
-						if (ticket.isAvailable()) {
 
-							isTicketAvailable = true;
-
-							// Update Ticket in Ticket Association
-							ticketAssociation.setTicket(ticket);
-							break;
-						}
-					}
-
-					if (isTicketAvailable == false) {
-						// No Available Tickets
-						purchaseTicketResponse.setResponseCode(-1);
-						purchaseTicketResponse.setResponseMessage("No Tickets Available for Draw: " + drawNumber);
-						return purchaseTicketResponse;
-					}
+					// Update Ticket in Ticket Association
+					ticketAssociation.setTicket(tickets.get(0));
 
 				} else {
-					// Ticket not found
+					// Available Tickets not found
 					purchaseTicketResponse.setResponseCode(-1);
-					purchaseTicketResponse.setResponseMessage("Tickets not created for Draw: " + drawNumber);
+					purchaseTicketResponse.setResponseMessage("Tickets not available for Draw: " + drawNumber);
 					return purchaseTicketResponse;
 				}
 			} else {
@@ -306,20 +290,74 @@ public class LmsServiceImpl implements iLmsService {
 			// Mark ticket as used
 			ticketAssociation.getTicket().setAvailable(false);
 			ticketRepository.save(ticketAssociation.getTicket());
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			purchaseTicketResponse.setResponseCode(-1);
 			purchaseTicketResponse.setResponseMessage("Error : " + e.getMessage());
 		}
 		return purchaseTicketResponse;
 	}
 
+	/**
+	 * Service for Selection Winner for Draw
+	 */
 	@Override
-	public TicketAssociation setWinnerTicket(String ticketNumber) {
+	public DrawWinnerResponse selectWinnerForDraw(Draw draw) {
 
-		TicketAssociation ticketAssociation = ticketAssociationRepository.getByTicketNumber(ticketNumber);
-		ticketAssociation.setWinner(true);
-		ticketAssociationRepository.save(ticketAssociation);
-		return ticketAssociation;
+		DrawWinnerResponse drawWinnerResponse = new DrawWinnerResponse();
+
+		try {
+
+			draw = drawRepository.findByDrawNumber(draw.getDrawNumber());
+			if (draw != null) {
+				List<Ticket> tickets = ticketRepository.findByDrawAndAvailable(draw, false);
+				if (!tickets.isEmpty()) {
+
+					// Select Random Ticket as Winner Ticket
+					int randomIndex = getRandomValue(0, tickets.size());
+					Ticket winnerTicket = tickets.get(randomIndex);
+
+					// Update Draw Winner Response
+					TicketAssociation ticketAssociation = ticketAssociationRepository.findByTicket(winnerTicket);
+					drawWinnerResponse.setCustomerIdentity(ticketAssociation.getCustomer().getCustomerIdentity());
+					drawWinnerResponse.setTicketAssociationID(ticketAssociation.getTicketAssociationID());
+					drawWinnerResponse.setTicketNumber(winnerTicket.getTicketNumber());
+					drawWinnerResponse
+							.setTicketOwnerIdentity(ticketAssociation.getTicketOwner().getTicketOwnerIdentity());
+
+					// Update Ticket as Winner
+					ticketAssociation.setWinner(true);
+					ticketAssociationRepository.save(ticketAssociation);
+				} else {
+					// No Tickets available for Draw
+					drawWinnerResponse.setResponseCode(-1);
+					drawWinnerResponse.setResponseMessage("No Tickets available for Draw " + draw.getDrawNumber());
+					return drawWinnerResponse;
+				}
+
+			} else {
+				// Draw not found
+				drawWinnerResponse.setResponseCode(-1);
+				drawWinnerResponse.setResponseMessage("Draw not found");
+				return drawWinnerResponse;
+
+			}
+
+		} catch (Exception e) {
+			drawWinnerResponse.setResponseCode(-1);
+			drawWinnerResponse.setResponseMessage(
+					"Issue in selecting winner for Draw " + draw.getDrawNumber() + ". Please try again.");
+
+		}
+
+		return drawWinnerResponse;
+	}
+
+	private int getRandomValue(int Min, int Max) {
+
+		// Get the random integer within Min and Max
+		return ThreadLocalRandom.current().nextInt(Min, Max);
 	}
 
 	/**

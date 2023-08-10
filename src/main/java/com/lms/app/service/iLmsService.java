@@ -2,6 +2,7 @@ package com.lms.app.service;
 
 import com.lms.app.dto.CustomerResponse;
 import com.lms.app.dto.DrawResponse;
+import com.lms.app.dto.DrawWinnerResponse;
 import com.lms.app.dto.GenerateTicketsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketResponse;
@@ -10,7 +11,6 @@ import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
 import com.lms.app.entity.Ticket;
-import com.lms.app.entity.TicketAssociation;
 import com.lms.app.entity.TicketOwner;
 
 public interface iLmsService {
@@ -37,7 +37,7 @@ public interface iLmsService {
 
 	PurchaseTicketResponse purchaseTicket(String ticketNumber, String ticketOwnerIdentity);
 
-	TicketAssociation setWinnerTicket(String ticketNumber);
+	DrawWinnerResponse selectWinnerForDraw(Draw draw);
 
 	GenerateTicketsResponse generateTicketsforDrawNumber(String drawNumber);
 }
