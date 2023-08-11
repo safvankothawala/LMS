@@ -6,8 +6,6 @@ package com.lms.app.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +22,11 @@ import com.lms.app.dto.TicketOwnerResponse;
 import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
-import com.lms.app.entity.Ticket;
 import com.lms.app.entity.TicketOwner;
 import com.lms.app.service.LmsServiceImpl;
 
 /**
- * REST Controller for LMS
+ * REST Controller for LMS APIs
  */
 @RestController
 @RequestMapping("/lms")
@@ -40,15 +37,12 @@ public class LmsController {
 	@Autowired
 	private LmsServiceImpl lmsService;
 
-	@GetMapping("/license/get/{id}")
-	public License getLicenseforID(@PathVariable(required = true) Long id) {
-		return lmsService.getLicenseForID(id);
-	}
-
 	/**
 	 * API to Create a License
 	 * 
-	 * @param LicenseKey, MaxTicketsPerDraw, ValidityPeriod
+	 * @param LicenseKey
+	 * @param MaxTicketsPerDraw
+	 * @param ValidityPeriod
 	 * @return ResponseCode, ResponseMessage and LicenseID
 	 */
 	@PostMapping("/license/create")
@@ -71,11 +65,6 @@ public class LmsController {
 
 		return licenseResponse;
 
-	}
-
-	@GetMapping("/customer/get/{customerIdentity}")
-	public Customer getCustomerByName(@PathVariable(required = true) String customerIdentity) {
-		return lmsService.getCustomerByCustomerIdentity(customerIdentity);
 	}
 
 	/**
@@ -105,11 +94,6 @@ public class LmsController {
 
 		return customerResponse;
 
-	}
-
-	@GetMapping("/draw/get/{drawNumber}")
-	public Draw getDrawByDrawNumber(@PathVariable(required = true) String drawNumber) {
-		return lmsService.getDrawByDrawNumber(drawNumber);
 	}
 
 	/**
@@ -161,22 +145,6 @@ public class LmsController {
 		}
 
 		return generateTicketsResponse;
-	}
-
-	@GetMapping("/ticket/get/{ticketNumber}")
-	public Ticket getTicketByTicketNumber(@PathVariable(required = true) String ticketNumber) {
-		return lmsService.getTicketByTicketNumber(ticketNumber);
-	}
-
-	@PostMapping("/ticket/create")
-	public Ticket createTicket(@RequestBody Ticket ticket) {
-		System.out.println(ticket);
-		return lmsService.createTicket(ticket);
-	}
-
-	@GetMapping("/ticketowner/get/{ticketOwnerIdentity}")
-	public TicketOwner getTicketOwnerByTicketOnwerIdentity(@PathVariable(required = true) String ticketOwnerIdentity) {
-		return lmsService.getTicketOwnerByTicketOwnerIdentity(ticketOwnerIdentity);
 	}
 
 	/**
@@ -268,4 +236,37 @@ public class LmsController {
 
 		return drawWinnerResponse;
 	}
+
+	/*
+	 * @GetMapping("/license/get/{id}") public License
+	 * getLicenseforID(@PathVariable(required = true) Long id) { return
+	 * lmsService.getLicenseForID(id); }
+	 */
+
+	/*
+	 * @GetMapping("/customer/get/{customerIdentity}") public Customer
+	 * getCustomerByName(@PathVariable(required = true) String customerIdentity) {
+	 * return lmsService.getCustomerByCustomerIdentity(customerIdentity); }
+	 */
+
+	/*
+	 * @GetMapping("/draw/get/{drawNumber}") public Draw
+	 * getDrawByDrawNumber(@PathVariable(required = true) String drawNumber) {
+	 * return lmsService.getDrawByDrawNumber(drawNumber); }
+	 */
+
+	/*
+	 * @GetMapping("/ticket/get/{ticketNumber}") public Ticket
+	 * getTicketByTicketNumber(@PathVariable(required = true) String ticketNumber) {
+	 * return lmsService.getTicketByTicketNumber(ticketNumber); }
+	 * 
+	 * @PostMapping("/ticket/create") public Ticket createTicket(@RequestBody Ticket
+	 * ticket) { System.out.println(ticket); return lmsService.createTicket(ticket);
+	 * }
+	 * 
+	 * @GetMapping("/ticketowner/get/{ticketOwnerIdentity}") public TicketOwner
+	 * getTicketOwnerByTicketOnwerIdentity(@PathVariable(required = true) String
+	 * ticketOwnerIdentity) { return
+	 * lmsService.getTicketOwnerByTicketOwnerIdentity(ticketOwnerIdentity); }
+	 */
 }
