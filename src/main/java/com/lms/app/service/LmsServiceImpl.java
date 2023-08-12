@@ -2,7 +2,9 @@ package com.lms.app.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,6 +24,7 @@ import com.lms.app.dto.GetActiveDrawsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketResponse;
 import com.lms.app.dto.TicketOwnerResponse;
+import com.lms.app.dto.WinningTicket;
 import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
@@ -313,8 +316,8 @@ public class LmsServiceImpl implements iLmsService {
 						.getMaxTickets()) {
 					// Max Tickets are sold for Customer
 					purchaseTicketResponse.setResponseCode(-1);
-					String errorMessage = "Ticket Owner belongs to a Customer "
-							+ ticketOwner.getCustomer().getCustomerIdentity() + " whose max tickets are already sold";
+					String errorMessage = "Max tickets for Customer " + ticketOwner.getCustomer().getCustomerIdentity()
+							+ " sold out.";
 					purchaseTicketResponse.setResponseMessage(errorMessage);
 					logger.error(errorMessage);
 					return purchaseTicketResponse;
@@ -546,6 +549,35 @@ public class LmsServiceImpl implements iLmsService {
 		getActiveDrawsResponse.setDraws(activeDraws);
 		return getActiveDrawsResponse;
 
+	}
+
+	public WinningTicket checkForWinningTicketForCustomer(String customerIdentity) {
+
+		if (customerIdentity != null) {
+
+			List<TicketAssociation> winnerTickets = ticketAssociationRepository.findByWinner(true);
+			List<TicketAssociation> customerWinningTickets = new ArrayList<TicketAssociation>();
+
+			for (TicketAssociation ticketAssociation : winnerTickets) {
+				if (ticketAssociation.getCustomer().getCustomerIdentity().equals(customerIdentity)) {
+					customerWinningTickets.add(ticketAssociation);
+				}
+			}
+
+			if (!customerWinningTickets.isEmpty()) {
+				customerWinningTickets.sort((o1, o2) -> o1.getCustomer().getLastModifiedDate()
+						.compareTo(o2.getCustomer().getLastModifiedDate()));
+				TicketAssociation winningTicketForCustomer = customerWinningTickets.get(0);
+				WinningTicket winningTicket = new WinningTicket();
+				winningTicket.setTicketNumber(winningTicketForCustomer.getTicket().getTicketNumber());
+				winningTicket
+						.setTicketOwnerIdentity(winningTicketForCustomer.getTicketOwner().getTicketOwnerIdentity());
+				winningTicket.setDrawNumber(winningTicketForCustomer.getTicket().getDraw().getDrawNumber());
+				return winningTicket;
+			}
+		}
+
+		return null;
 	}
 
 	/*

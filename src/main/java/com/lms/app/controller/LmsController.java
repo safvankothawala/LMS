@@ -3,9 +3,13 @@
  */
 package com.lms.app.controller;
 
+import java.time.Duration;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +25,16 @@ import com.lms.app.dto.GetActiveDrawsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketRequest;
 import com.lms.app.dto.PurchaseTicketResponse;
+import com.lms.app.dto.ResponseDTO;
 import com.lms.app.dto.TicketOwnerResponse;
+import com.lms.app.dto.WinningTicket;
 import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
 import com.lms.app.entity.TicketOwner;
 import com.lms.app.service.LmsServiceImpl;
+
+import reactor.core.publisher.Flux;
 
 /**
  * REST Controller for LMS APIs
@@ -39,6 +47,9 @@ public class LmsController {
 
 	@Autowired
 	private LmsServiceImpl lmsService;
+
+	@Value("${client.app.version}")
+	private String appVersion;
 
 	/**
 	 * API to Create a License
@@ -240,6 +251,11 @@ public class LmsController {
 		return drawWinnerResponse;
 	}
 
+	/**
+	 * API to get Active Draws
+	 * 
+	 * @return List of Active Draws
+	 */
 	@GetMapping("/draw/getActiveDraws")
 	public GetActiveDrawsResponse getActiveDrawList() {
 
@@ -255,6 +271,78 @@ public class LmsController {
 		}
 
 		return getActiveDrawsResponse;
+	}
+
+	/**
+	 * SSE for checking the winning ticket for customer
+	 * 
+	 * @param customerIdentity
+	 * @return
+	 */
+	@GetMapping(value = "/checkwinner/{customerIdentity}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<WinningTicket> checkWinner(@PathVariable String customerIdentity) {
+
+		logger.info("Check Winner for Customer: " + customerIdentity);
+
+		if (customerIdentity != null) {
+			// it will check for any winning ticket and respond
+			return Flux.interval(Duration.ofSeconds(1)).map(sequence -> checkForWinningTicket(customerIdentity)).log();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * API to check version
+	 * 
+	 * @param version
+	 * @return
+	 */
+	@GetMapping(value = "/checkversion/{version}")
+	public ResponseDTO checkVersion(@PathVariable String version) {
+
+		logger.debug("Check Version: " + version);
+
+		ResponseDTO response = new ResponseDTO();
+		if (version != null) {
+			// validate version
+			if (appVersion != null && appVersion.equals(version)) {
+
+				logger.debug("App Version is latest" + version);
+				response.setResponseCode(0);
+				response.setResponseMessage("App version is latest");
+
+			} else {
+
+				logger.debug("App Version is not latest" + version);
+				response.setResponseCode(-1);
+				response.setResponseMessage(
+						"Your App version " + version + " is not latest. Kindly upgrade your application to continue using the Application !!");
+
+			}
+
+		} else {
+			logger.debug("App Version is null");
+			response.setResponseCode(-1);
+			response.setResponseMessage("App Version Not Available");
+		}
+
+		return response;
+	}
+
+	private WinningTicket checkForWinningTicket(String customerIdentity) {
+		// check for any winning ticket
+
+		WinningTicket winningTicket = lmsService.checkForWinningTicketForCustomer(customerIdentity);
+		if (winningTicket != null) {
+			logger.info("Winning Ticket Found: " + winningTicket.getTicketNumber());
+			return winningTicket;
+		}
+		logger.info("Winning Ticket not found");
+		WinningTicket noTicket = new WinningTicket();
+		noTicket.setResponseCode(-1);
+		noTicket.setResponseMessage("Winning Ticket not found");
+		return noTicket;
 	}
 
 	/*

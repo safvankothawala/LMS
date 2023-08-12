@@ -19,4 +19,6 @@ public interface TicketAssociationRepository extends JpaRepository<TicketAssocia
 
 	TicketAssociation findByTicket(Ticket winnerTicket);
 
+	List<TicketAssociation> findByWinner(boolean winner);
+
 }

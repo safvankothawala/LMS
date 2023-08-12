@@ -8,6 +8,7 @@ import com.lms.app.dto.GetActiveDrawsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketResponse;
 import com.lms.app.dto.TicketOwnerResponse;
+import com.lms.app.dto.WinningTicket;
 import com.lms.app.entity.Customer;
 import com.lms.app.entity.Draw;
 import com.lms.app.entity.License;
@@ -31,6 +32,8 @@ public interface iLmsService {
 	DrawWinnerResponse selectWinnerForDraw(Draw draw);
 
 	GenerateTicketsResponse generateTicketsforDrawNumber(String drawNumber);
-	
+
 	GetActiveDrawsResponse getActiveDrawList();
+
+	WinningTicket checkForWinningTicketForCustomer(String customerIdentity);
 }
