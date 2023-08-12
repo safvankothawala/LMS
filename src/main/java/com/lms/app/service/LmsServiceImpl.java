@@ -2,8 +2,11 @@ package com.lms.app.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +18,7 @@ import com.lms.app.dto.CustomerResponse;
 import com.lms.app.dto.DrawResponse;
 import com.lms.app.dto.DrawWinnerResponse;
 import com.lms.app.dto.GenerateTicketsResponse;
+import com.lms.app.dto.GetActiveDrawsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketResponse;
 import com.lms.app.dto.TicketOwnerResponse;
@@ -106,7 +110,19 @@ public class LmsServiceImpl implements iLmsService {
 			} else {
 				// License Key not found
 				customerResponse.setResponseCode(-1);
-				String errorMessage = "License Key " + customer.getLicense().getLicenseKey() + " not valid";
+				String errorMessage = "License Key " + customer.getLicense().getLicenseKey() + " is not valid";
+				customerResponse.setResponseMessage(errorMessage);
+				logger.error(errorMessage);
+				return customerResponse;
+			}
+
+			// check for uniqueness of Customer Identity
+			Customer customerWithSameIdentity = customerRepository
+					.findByCustomerIdentity(customer.getCustomerIdentity());
+			if (customerWithSameIdentity != null) {
+				customerResponse.setResponseCode(-1);
+				String errorMessage = "Customer with same Identity " + customer.getCustomerIdentity()
+						+ " already exists.";
 				customerResponse.setResponseMessage(errorMessage);
 				logger.error(errorMessage);
 				return customerResponse;
@@ -120,7 +136,7 @@ public class LmsServiceImpl implements iLmsService {
 
 		} catch (Exception e) {
 			if (e instanceof DataIntegrityViolationException) {
-				customerResponse.setResponseMessage("Cannot reuse the same license key for multiple customers");
+				customerResponse.setResponseMessage("License Key already in use.");
 				logger.error("Cannot reuse the same license key for multiple customers: " + e.getMessage(), e);
 			} else {
 				customerResponse.setResponseMessage("Error : " + e.getMessage());
@@ -512,6 +528,24 @@ public class LmsServiceImpl implements iLmsService {
 		}
 
 		return generateTicketsResponse;
+	}
+
+	/**
+	 * Service for getting Active Draws
+	 */
+	public GetActiveDrawsResponse getActiveDrawList() {
+
+		// Find all Draws
+		List<Draw> draws = drawRepository.findAll();
+
+		// Include only those Draws which are Active
+		Date today = Calendar.getInstance().getTime();
+		List<Draw> activeDraws = draws.stream().filter(p -> p.getEndDate().after(today))
+				.filter(p -> p.getStartDate().before(today)).collect(Collectors.toList());
+		GetActiveDrawsResponse getActiveDrawsResponse = new GetActiveDrawsResponse();
+		getActiveDrawsResponse.setDraws(activeDraws);
+		return getActiveDrawsResponse;
+
 	}
 
 	/*

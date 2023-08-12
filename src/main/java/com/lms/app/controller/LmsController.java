@@ -6,6 +6,8 @@ package com.lms.app.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import com.lms.app.dto.CustomerResponse;
 import com.lms.app.dto.DrawResponse;
 import com.lms.app.dto.DrawWinnerResponse;
 import com.lms.app.dto.GenerateTicketsResponse;
+import com.lms.app.dto.GetActiveDrawsResponse;
 import com.lms.app.dto.LicenseResponse;
 import com.lms.app.dto.PurchaseTicketRequest;
 import com.lms.app.dto.PurchaseTicketResponse;
@@ -235,6 +238,23 @@ public class LmsController {
 		}
 
 		return drawWinnerResponse;
+	}
+
+	@GetMapping("/draw/getActiveDraws")
+	public GetActiveDrawsResponse getActiveDrawList() {
+
+		logger.debug("Call for Get Active Draws");
+
+		GetActiveDrawsResponse getActiveDrawsResponse = lmsService.getActiveDrawList();
+
+		if (getActiveDrawsResponse.getResponseCode() == 0) {
+			logger.info("Active Draw List: " + getActiveDrawsResponse.getDraws());
+		} else {
+			logger.error("Error in getting Active Draws." + " , error: " + getActiveDrawsResponse.getResponseMessage());
+
+		}
+
+		return getActiveDrawsResponse;
 	}
 
 	/*
