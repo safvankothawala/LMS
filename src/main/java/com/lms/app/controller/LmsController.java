@@ -286,7 +286,7 @@ public class LmsController {
 
 		if (customerIdentity != null) {
 			// it will check for any winning ticket and respond
-			return Flux.interval(Duration.ofSeconds(1)).map(sequence -> checkForWinningTicket(customerIdentity)).log();
+			return Flux.interval(Duration.ofMillis(300)).map(sequence -> checkForWinningTicket(customerIdentity)).log();
 		} else {
 			return null;
 		}

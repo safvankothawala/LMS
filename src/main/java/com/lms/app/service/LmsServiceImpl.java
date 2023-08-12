@@ -193,6 +193,19 @@ public class LmsServiceImpl implements iLmsService {
 
 		TicketOwnerResponse ticketOwnerResponse = new TicketOwnerResponse();
 		try {
+			
+			if(ticketOwner.getTicketOwnerIdentity() == null | ticketOwner.getTicketOwnerIdentity().equals("")) {
+
+				// Ticket Owner Identity is not available
+				ticketOwnerResponse.setResponseCode(-1);
+				String errorMessage = "Ticket Owner Identity missing in the request";
+				ticketOwnerResponse.setResponseMessage(errorMessage);
+
+				logger.error(errorMessage);
+
+				return ticketOwnerResponse;
+			
+			}
 
 			// Get Customer by CustomerIdentity
 			Customer customer = customerRepository
