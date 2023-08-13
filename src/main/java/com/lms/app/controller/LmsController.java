@@ -316,8 +316,8 @@ public class LmsController {
 
 				logger.debug("App Version is not latest" + version);
 				response.setResponseCode(-1);
-				response.setResponseMessage(
-						"Your App version " + version + " is not latest. Kindly upgrade your application to continue using the Application !!");
+				response.setResponseMessage("Your App version " + version
+						+ " is not latest. Kindly upgrade your application to continue using the Service !!");
 
 			}
 
@@ -345,36 +345,4 @@ public class LmsController {
 		return noTicket;
 	}
 
-	/*
-	 * @GetMapping("/license/get/{id}") public License
-	 * getLicenseforID(@PathVariable(required = true) Long id) { return
-	 * lmsService.getLicenseForID(id); }
-	 */
-
-	/*
-	 * @GetMapping("/customer/get/{customerIdentity}") public Customer
-	 * getCustomerByName(@PathVariable(required = true) String customerIdentity) {
-	 * return lmsService.getCustomerByCustomerIdentity(customerIdentity); }
-	 */
-
-	/*
-	 * @GetMapping("/draw/get/{drawNumber}") public Draw
-	 * getDrawByDrawNumber(@PathVariable(required = true) String drawNumber) {
-	 * return lmsService.getDrawByDrawNumber(drawNumber); }
-	 */
-
-	/*
-	 * @GetMapping("/ticket/get/{ticketNumber}") public Ticket
-	 * getTicketByTicketNumber(@PathVariable(required = true) String ticketNumber) {
-	 * return lmsService.getTicketByTicketNumber(ticketNumber); }
-	 * 
-	 * @PostMapping("/ticket/create") public Ticket createTicket(@RequestBody Ticket
-	 * ticket) { System.out.println(ticket); return lmsService.createTicket(ticket);
-	 * }
-	 * 
-	 * @GetMapping("/ticketowner/get/{ticketOwnerIdentity}") public TicketOwner
-	 * getTicketOwnerByTicketOnwerIdentity(@PathVariable(required = true) String
-	 * ticketOwnerIdentity) { return
-	 * lmsService.getTicketOwnerByTicketOwnerIdentity(ticketOwnerIdentity); }
-	 */
 }

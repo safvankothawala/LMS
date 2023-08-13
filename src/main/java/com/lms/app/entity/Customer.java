@@ -127,4 +127,11 @@ public class Customer {
 		this.license = license;
 	}
 
+	@Override
+	public String toString() {
+		return "Customer [customerID=" + customerID + ", customerName=" + customerName + ", customerIdentity="
+				+ customerIdentity + ", paymentMethod=" + paymentMethod + ", dateOfCreation=" + dateOfCreation
+				+ ", lastModifiedDate=" + lastModifiedDate + ", license=" + license + ", tickets=" + tickets + "]";
+	}
+
 }

@@ -124,4 +124,11 @@ public class TicketOwner {
 		this.customer = customer;
 	}
 
+	@Override
+	public String toString() {
+		return "TicketOwner [ticketOwnerID=" + ticketOwnerID + ", name=" + name + ", dateOfCreation=" + dateOfCreation
+				+ ", lastModifiedDate=" + lastModifiedDate + ", mobileNumber=" + mobileNumber + ", ticketOwnerIdentity="
+				+ ticketOwnerIdentity + ", paymentMethod=" + paymentMethod + ", customer=" + customer + "]";
+	}
+
 }

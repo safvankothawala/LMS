@@ -114,4 +114,11 @@ public class License {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
+	@Override
+	public String toString() {
+		return "License [licenseID=" + licenseID + ", licenseKey=" + licenseKey + ", maxTickets=" + maxTickets
+				+ ", validityPeriod=" + validityPeriod + ", dateOfCreation=" + dateOfCreation + ", lastModifiedDate="
+				+ lastModifiedDate + ", customer=" + customer + "]";
+	}
+
 }
